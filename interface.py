@@ -1,11 +1,12 @@
-import tkinter as tk
-from tkinter import ttk
+import ttkbootstrap as ttk
+from task_engine import TaskEngine
 
-class Interface(tk.Tk):
+class Interface(ttk.Window):
     def __init__(self):
-        super().__init__()
+        super().__init__(themename="flatly")
+        self.engine = TaskEngine(self)
+
         style = ttk.Style()
-        style.theme_use("clam")  # allows more customization
         style.configure(
             "Title.TLabel",
             background="#f7f7f9",
@@ -13,10 +14,15 @@ class Interface(tk.Tk):
         )
 
         # Button Font Style
-        style.configure("Add.TButton",
-                        font=("Arial", 14, "bold"),
-                        background="#f7f7f9",
-                        foreground="black")
+        style.configure("TButton", font=("Arial", 14, "bold"))
+        style.configure("Treeview",
+                        font=("Arial", 14),
+                        rowheight=42)
+        style.configure(
+            "Treeview.Heading",
+            font=("Arial", 15, "bold"),
+            background="#EDF2FA",
+        )
 
         self.title("To-Do List App")
         self.geometry("850x850")
@@ -80,8 +86,10 @@ class Interface(tk.Tk):
         self.category_entry.grid(row=2, column=3, padx= 10, sticky="ew")
 
         # Add Task Button
-        self.add_btn = ttk.Button(self.field_frame, text= "Add Task",
-                                  style="Add.TButton")
+        self.add_btn = ttk.Button(self.field_frame,
+                                  text= "+ Add Task",
+                                  bootstyle="primary",
+                                  command=self.engine.add_task)
         self.add_btn.grid(row=2, column=4)
 
         # ------------------------------
@@ -94,20 +102,24 @@ class Interface(tk.Tk):
         self.button_frame.columnconfigure(3, weight=1) # Clear button
         self.button_frame.grid(row=2, column=0, columnspan=4, sticky="ew")
         # Complete Button
-        self.complete_btn = ttk.Button(self.button_frame, text= "Mark Complete",
-                                  style="Add.TButton", padding=10)
+        self.complete_btn = ttk.Button(self.button_frame,
+                                       text= "✓ Mark Complete",
+                                       bootstyle="success",
+                                       padding=10,
+                                       command=self.engine.completed)
         self.complete_btn.grid(row=0, column=0)
         # Delete button
-        self.delete_btn = ttk.Button(self.button_frame, text= "Delete Task",
-                                  style="Add.TButton", padding=10)
+        self.delete_btn = ttk.Button(self.button_frame, text= "🗑 Delete Task",
+                                     bootstyle="danger", padding=10,
+                                     command=self.engine.delete_task)
         self.delete_btn.grid(row=0, column=1)
         # Edit button
-        self.edit_btn = ttk.Button(self.button_frame, text= "Edit Task",
-                                  style="Add.TButton", padding=10)
+        self.edit_btn = ttk.Button(self.button_frame, text= "✎ Edit Task",
+                                   bootstyle="warning", padding=10, command=self.engine.edit_task)
         self.edit_btn.grid(row=0, column=2)
         # Clear button
-        self.clear_btn = ttk.Button(self.button_frame, text= "Clear All",
-                                  style="Add.TButton", padding=10)
+        self.clear_btn = ttk.Button(self.button_frame, text= "🗑 Clear All",
+                                    bootstyle="secondary", padding=10, command=self.engine.clear)
         self.clear_btn.grid(row=0, column=3)
 
         # ------------------------------
@@ -134,11 +146,21 @@ class Interface(tk.Tk):
             self.table_frame,
             columns=self.columns,
             show="headings",
-            height=8
+            height=8,
+            style="Treeview"
+        )
+        self.task_table.tag_configure(
+            "evenrow",
+            background="#ffffff"
+        )
+
+        self.task_table.tag_configure(
+            "oddrow",
+            background="#f8fafc"
         )
 
         for col in self.columns:
-            self.task_table.heading(col, text=col)
+            self.task_table.heading(col, text=col,)
 
         self.task_table.column("Task", width=300, anchor="w")
         self.task_table.column("Priority", width=120, anchor="center")
@@ -147,3 +169,31 @@ class Interface(tk.Tk):
         self.task_table.column("Status", width=140, anchor="center")
 
         self.task_table.grid(row=0, column=0, sticky="nsew")
+
+        self.engine.load_tasks()
+
+        # ------------------------------
+        # Task Counts
+        # ------------------------------
+        self.count_frame = ttk.Frame(self, padding=15, relief="solid", borderwidth=1, style="Title.TLabel")
+        self.count_frame.columnconfigure(0, weight=3)  # Task wider
+        self.count_frame.columnconfigure(1, weight=1)  # Priority
+        self.count_frame.columnconfigure(2, weight=1)  # Date
+
+        self.count_frame.grid(row=4, column=0, columnspan=3, padx=30, pady=20, sticky="ew")
+
+        self.total_count = ttk.Label(self.count_frame, text="Total Tasks: 5", background="#f7f7f9",
+                                     font=("Arial", 16))
+        self.total_count.grid(row=0, column=0, sticky="nsew")
+
+        self.completed_count = ttk.Label(self.count_frame, text="Completed Tasks: 5",
+                                         background="#f7f7f9",
+                                         font=("Arial", 16))
+        self.completed_count.grid(row=0, column=1, sticky="nsew")
+
+        self.pending_count = ttk.Label(self.count_frame, text="Pending Tasks: 5",
+                                       background="#f7f7f9",
+                                       font=("Arial", 16)                                       )
+        self.pending_count.grid(row=0, column=2, sticky="nsew")
+
+
