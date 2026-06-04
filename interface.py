@@ -182,18 +182,21 @@ class Interface(ttk.Window):
 
         self.count_frame.grid(row=4, column=0, columnspan=3, padx=30, pady=20, sticky="ew")
 
-        self.total_count = ttk.Label(self.count_frame, text="Total Tasks: 5", background="#f7f7f9",
+        self.total_count = ttk.Label(self.count_frame, text="Total Tasks: 0", background="#f7f7f9",
                                      font=("Arial", 16))
+        self.engine.count_tasks()
         self.total_count.grid(row=0, column=0, sticky="nsew")
 
-        self.completed_count = ttk.Label(self.count_frame, text="Completed Tasks: 5",
+        self.completed_count = ttk.Label(self.count_frame, text=f"Completed Tasks: 0",
                                          background="#f7f7f9",
                                          font=("Arial", 16))
+        self.engine.completed_count()
         self.completed_count.grid(row=0, column=1, sticky="nsew")
 
-        self.pending_count = ttk.Label(self.count_frame, text="Pending Tasks: 5",
+        self.pending_count = ttk.Label(self.count_frame, text="Pending Tasks: 0",
                                        background="#f7f7f9",
-                                       font=("Arial", 16)                                       )
+                                       font=("Arial", 16)
+                                       )
+        self.engine.pending_count()
         self.pending_count.grid(row=0, column=2, sticky="nsew")
-
 

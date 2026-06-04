@@ -11,6 +11,8 @@ class TaskEngine:
         values = list(self.ui.task_table.item(item_id, "values"))
         values[4] = "Completed"
         self.ui.task_table.item(item_id, values = values)
+        self.completed_count()
+        self.pending_count()
         self.save_task()
 
     def add_task(self):
@@ -40,11 +42,16 @@ class TaskEngine:
                                       values=(task, priority_display, due_date, category, "Pending"),
                                       tags=row_tag)
             self.save_task()
+            self.count_tasks()
+            self.pending_count()
     def delete_task(self):
         selected = self.ui.task_table.selection()
         if selected:
            self.ui.task_table.delete(selected[0])
            self.save_task()
+           self.count_tasks()
+           self.completed_count()
+           self.pending_count()
         else:
             messagebox.showerror("Error", "There is no task to delete!")
 
@@ -97,6 +104,8 @@ class TaskEngine:
                                    bootstyle="primary",
                                    command=self.add_task)
             self.save_task()
+            self.completed_count()
+            self.pending_count()
     def clear(self):
         self.ui.task_entry.delete(0, "end")
         self.ui.priority_entry.set("")
@@ -126,3 +135,25 @@ class TaskEngine:
                     )
         except FileNotFoundError:
             pass
+
+    def count_tasks(self):
+        self.ui.total_count.config(
+            text=f"Total Tasks: {len(self.ui.task_table.get_children())}"
+        )
+
+    def completed_count(self):
+        total_completed = 0
+        for item in self.ui.task_table.get_children():
+            values = self.ui.task_table.item(item, "values")
+            if values[4] == "Completed":
+                total_completed += 1
+        self.ui.completed_count.config(text=f"Completed Tasks: {total_completed}")
+
+    def pending_count(self):
+        total_completed = 0
+        for item in self.ui.task_table.get_children():
+            values = self.ui.task_table.item(item, "values")
+            if values[4] == "Pending":
+                total_completed += 1
+        self.ui.pending_count.config(text=f"Pending Tasks: {total_completed}")
+
