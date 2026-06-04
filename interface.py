@@ -176,9 +176,9 @@ class Interface(ttk.Window):
         # Task Counts
         # ------------------------------
         self.count_frame = ttk.Frame(self, padding=15, relief="solid", borderwidth=1, style="Title.TLabel")
-        self.count_frame.columnconfigure(0, weight=3)  # Task wider
-        self.count_frame.columnconfigure(1, weight=1)  # Priority
-        self.count_frame.columnconfigure(2, weight=1)  # Date
+        self.count_frame.columnconfigure(0, weight=3)  # Task Counter
+        self.count_frame.columnconfigure(1, weight=1)  # Completed Counter
+        self.count_frame.columnconfigure(2, weight=1)  # Pending Counter
 
         self.count_frame.grid(row=4, column=0, columnspan=3, padx=30, pady=20, sticky="ew")
 

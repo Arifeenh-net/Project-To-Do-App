@@ -1,4 +1,5 @@
 from tkinter import messagebox
+from datetime import datetime
 
 class TaskEngine:
     def __init__(self, ui):
@@ -37,6 +38,9 @@ class TaskEngine:
 
         if task.strip() == "" or priority == "" or due_date == "" or category == "":
             messagebox.showerror("Error", "You cannot leave any field empty")
+        elif not self.valid_date(due_date):
+            messagebox.showerror("Error", "Date must be written in DD-MM-YYY format!\n"
+                                          "Ex: 20-11-2026")
         else:
             self.ui.task_table.insert("", "end",
                                       values=(task, priority_display, due_date, category, "Pending"),
@@ -89,6 +93,9 @@ class TaskEngine:
 
         if task.strip() == "" or priority == "" or due_date == "" or category == "":
             messagebox.showerror("Error", "You cannot leave any field empty!")
+        elif not self.valid_date(due_date):
+            messagebox.showerror("Error", "Date must be written in DD-MM-YYY format!\n"
+                                          "Ex: 20-11-2026")
         else:
             self.ui.task_table.item(
                 self.selected_item,
@@ -156,4 +163,12 @@ class TaskEngine:
             if values[4] == "Pending":
                 total_completed += 1
         self.ui.pending_count.config(text=f"Pending Tasks: {total_completed}")
+
+    def valid_date(self, date_text):
+        try:
+            datetime.strptime(date_text, "%d-%m-%Y")
+            return True
+        except ValueError:
+            return False
+
 
